@@ -330,6 +330,7 @@ function openModal(id) {
   });
 
   document.addEventListener('keydown', escHandler);
+  initCarousel(id);
 }
 
 function initCarousel(id) {
