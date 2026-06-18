@@ -6,8 +6,8 @@
 let machines = [];
 
 
-const brands = [...new Set(machines.map(m => m.brand))].sort();
-const yearRange = { min: Math.min(...machines.map(m => m.year)), max: Math.max(...machines.map(m => m.year)) };
+let brands = [];
+let yearRange = { min: 2000, max: 2025 };
 
 function formatPrice(price) {
   return '$' + price.toLocaleString('en-US');
@@ -479,6 +479,8 @@ fetch('data/machines.json')
   .then(r => r.json())
   .then(data => {
     machines = data;
+    brands = [...new Set(data.map(m => m.brand))].sort();
+    yearRange = { min: Math.min(...data.map(m => m.year)), max: Math.max(...data.map(m => m.year)) };
     renderFeatured();
     initInventory();
     initForm();
