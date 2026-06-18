@@ -353,7 +353,7 @@ async function saveFileToGitHub(filePath, content, commitMsg, token) {
     }
 
     // Update file on GitHub
-    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${JSON_PATH}`, {
+    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
