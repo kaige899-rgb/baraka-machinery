@@ -81,6 +81,7 @@ function getImages(machine) {
   return machine.images || (machine.image ? [machine.image] : []);
 }
 function getImage(machine) {
+  const imgs = getImages(machine);
   return imgs.length > 0 ? imgs[0] : "";
 }
 
