@@ -19,19 +19,19 @@ body { font-family: 'Inter', sans-serif; background: #f5f3ef; color: #1a1a1a; }
 .login-box h2 { margin-bottom: 24px; }
 .login-box input { width: 100%; padding: 12px; border: 1px solid #e0ddd5; border-radius: 4px; margin-bottom: 16px; font-size: 14px; }
 .login-box button { width: 100%; padding: 12px; background: #C9A94E; color: #fff; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.tab-btn { padding: 10px 24px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; }
+.tab-btn.active { background: #C9A94E; color: #fff; }
+.tab-btn:not(.active) { background: #e8e3da; color: #666; }
 .token-box { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 .token-box label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #6b6b6b; }
 .token-box input { width: 100%; padding: 10px; border: 1px solid #e0ddd5; border-radius: 4px; font-size: 13px; }
 .token-box .hint { font-size: 12px; color: #999; margin-top: 6px; }
 table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 th { background: #1a1a1a; color: #C9A94E; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-td { padding: 12px 16px; border-bottom: 1px solid #f0ede6; font-size: 13px; vertical-align: middle; }
+td { padding: 12px 16px; border-bottom: 1px solid #f0ede6; font-size: 13px; }
 tr:hover td { background: #faf8f5; }
 .machine-img { width: 60px; height: 45px; object-fit: cover; border-radius: 4px; }
 .featured-badge { background: #C9A94E; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-.editable { cursor: pointer; color: #C9A94E; }
-.editable:hover { text-decoration: underline; }
-.actions { display: flex; gap: 6px; }
 .actions button { padding: 6px 12px; border: 1px solid #e0ddd5; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; }
 .actions button:hover { border-color: #C9A94E; color: #C9A94E; }
 .save-bar { position: sticky; bottom: 0; background: #1a1a1a; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; border-radius: 8px; }
@@ -42,10 +42,10 @@ tr:hover td { background: #faf8f5; }
 .toast { position: fixed; top: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; color: #fff; font-weight: 500; font-size: 14px; z-index: 9999; display: none; }
 .toast.success { background: #22c55e; }
 .toast.error { background: #ef4444; }
-.modal-edit { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-.modal-edit.active { display: flex; }
-.modal-edit-content { background: #fff; border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px; }
-.modal-edit-content h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.active { display: flex; }
+.modal-content { background: #fff; border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px; }
+.modal-content h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 12px; font-weight: 600; color: #6b6b6b; margin-bottom: 4px; }
 .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #e0ddd5; border-radius: 4px; font-size: 13px; font-family: 'Inter', sans-serif; }
@@ -55,13 +55,7 @@ tr:hover td { background: #faf8f5; }
 .modal-actions button { flex: 1; padding: 12px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .btn-save { background: #C9A94E; color: #fff; border: none; }
 .btn-cancel { background: #fff; border: 1px solid #e0ddd5; }
-.btn-add { background: #1a1a1a; color: #fff; border: none; float: right; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.empty-state { text-align: center; padding: 80px 20px; color: #999; }
-@media (max-width: 768px) {
-  table { font-size: 12px; }
-  th, td { padding: 8px 10px; }
-  .form-row { grid-template-columns: 1fr; }
-}
+@media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } table { font-size: 12px; } th, td { padding: 8px 10px; } }
 </style>
 </head>
 <body>
@@ -72,136 +66,39 @@ tr:hover td { background: #faf8f5; }
 </div>
 
 <div class="admin-content" id="app">
-  <!-- Login -->
   <div class="login-box" id="login-box">
     <h2>管理员登录</h2>
     <p style="font-size:13px;color:#999;margin-bottom:20px;">输入管理密码以进入后台</p>
-    <input type="password" id="admin-password" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter') login()">
+    <input type="password" id="admin-password" placeholder="请输入管理密码">
     <button id="login-btn">登录</button>
   </div>
 
-  <!-- Main Admin -->
   <div id="admin-panel" style="display:none;">
-    <!-- GitHub Token -->
     <div class="token-box">
       <label>GitHub Token（自动保存用）</label>
-      <input type="password" id="github-token" placeholder="输入 GitHub Personal Access Token" onchange="saveToken()">
-      <div class="hint">需要创建 GitHub Token：右上角头像 → Settings → Developer settings → Personal access tokens → Fine-grained tokens → 选择仓库权限为 Contents（读写）</div>
+      <input type="password" id="github-token" placeholder="GitHub Personal Access Token">
+      <div class="hint">设置 → Developer settings → Personal access tokens → Fine-grained tokens → 勾选 Contents 读写权限</div>
     </div>
 
-    <!-- Tab Buttons -->
     <div style="display:flex;gap:8px;margin-bottom:20px;">
-      <button id="tab-products" class="tab-btn active" onclick="switchTab('products')" style="padding:10px 24px;background:#C9A94E;color:#fff;border:none;border-radius:4px;font-weight:600;cursor:pointer;">📦 产品管理</button>
-      <button id="tab-videos" class="tab-btn" onclick="switchTab('videos')" style="padding:10px 24px;background:#e8e3da;color:#666;border:none;border-radius:4px;font-weight:600;cursor:pointer;">🎬 视频管理</button>
+      <button id="tab-products" class="tab-btn active" onclick="switchTab('products')">📦 产品管理</button>
+      <button id="tab-videos" class="tab-btn" onclick="switchTab('videos')">🎬 视频管理</button>
     </div>
 
-    <!-- Products Section -->
     <div id="section-products">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="font-family:'Playfair Display',serif;">产品列表</h3>
-      <span style="font-size:13px;color:#999;" id="machine-count">加载中...</span>
+      <table>
+        <thead><tr><th>图片</th><th>品牌</th><th>型号</th><th>年份</th><th>小时</th><th>价格</th><th>精品</th><th>操作</th></tr></thead>
+        <tbody id="machine-table-body"></tbody>
+      </table>
     </div>
 
-    <table>
-      <thead>
-        <tr><th>图片</th><th>品牌</th><th>型号</th><th>年份</th><th>小时</th><th>价格</th><th>精品</th><th>操作</th></tr>
-      </thead>
-      <tbody id="machine-table-body"></tbody>
-    </table>
-
-    </div><!-- end section-products -->
-
-    <!-- Videos Section (hidden by default) -->
     <div id="section-videos" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h3 style="font-family:'Playfair Display',serif;">视频列表</h3>
-        <span style="font-size:13px;color:#999;" id="video-count">加载中...</span>
-      </div>
       <table>
-        <thead>
-          <tr><th>封面</th><th>标题</th><th>分类</th><th>时长</th><th>类型</th><th>操作</th></tr>
-        </thead>
+        <thead><tr><th>封面</th><th>标题</th><th>分类</th><th>时长</th><th>类型</th><th>操作</th></tr></thead>
         <tbody id="video-table-body"></tbody>
       </table>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal-edit" id="edit-modal">
-      <div class="modal-edit-content">
-        <h3 id="edit-title">编辑产品</h3>
-        <div class="form-row">
-          <div class="form-group"><label>品牌</label><input id="edit-brand"></div>
-          <div class="form-group"><label>型号</label><input id="edit-model"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>年份</label><input id="edit-year" type="number"></div>
-          <div class="form-group"><label>工作小时</label><input id="edit-hours" type="number"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>价格 ($)</label><input id="edit-price" type="number"></div>
-          <div class="form-group"><label>地点</label><input id="edit-location"></div>
-        </div>
-        <div class="form-group">
-          <label>产品描述</label><textarea id="edit-desc" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-          <label>图片路径（每行一个）</label>
-          <textarea id="edit-images" rows="3" placeholder="assets/images/xxx.jpg"></textarea>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeEditModal()">取消</button>
-          <button class="btn-save" onclick="saveEdit()">保存修改</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Video Edit Modal -->
-    <div class="modal-edit" id="edit-video-modal">
-      <div class="modal-edit-content">
-        <h3 id="edit-video-title">编辑视频</h3>
-        <div class="form-group">
-          <label>视频标题</label><input id="edit-video-title-input">
-        </div>
-        <div class="form-group">
-          <label>描述</label><textarea id="edit-video-desc" rows="2"></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>分类</label>
-            <select id="edit-video-category">
-              <option value="machine-walkaround">Walkaround</option>
-              <option value="operation">In Operation</option>
-              <option value="inspection">Inspection & Loading</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>时长 (如 3:15)</label><input id="edit-video-duration">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>类型</label>
-            <select id="edit-video-type" onchange="toggleVideoType()">
-              <option value="youtube">YouTube</option>
-              <option value="mp4">本地 MP4</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>视频地址</label>
-            <input id="edit-video-url" placeholder="YouTube ID 或 MP4 路径">
-          </div>
-        </div>
-        <div class="form-group" id="video-thumb-group">
-          <label>缩略图 URL</label><input id="edit-video-thumb">
-        </div>
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeVideoEdit()">取消</button>
-          <button class="btn-save" onclick="saveVideoEdit()">保存修改</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Save Bar -->
     <div class="save-bar">
       <span class="info" id="save-info">修改后点击"保存到 GitHub"自动部署</span>
       <button id="save-btn" onclick="saveToGithub()">保存到 GitHub</button>
@@ -209,91 +106,164 @@ tr:hover td { background: #faf8f5; }
   </div>
 </div>
 
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-content">
+    <h3 id="edit-title">编辑产品</h3>
+    <div class="form-row">
+      <div class="form-group"><label>品牌</label><input id="edit-brand"></div>
+      <div class="form-group"><label>型号</label><input id="edit-model"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>年份</label><input id="edit-year" type="number"></div>
+      <div class="form-group"><label>工作小时</label><input id="edit-hours" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>价格 ($)</label><input id="edit-price" type="number"></div>
+      <div class="form-group"><label>地点</label><input id="edit-location"></div>
+    </div>
+    <div class="form-group"><label>产品描述</label><textarea id="edit-desc" rows="3"></textarea></div>
+    <div class="form-group"><label>图片路径（每行一个）</label><textarea id="edit-images" rows="3"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">取消</button>
+      <button class="btn-save" onclick="saveEdit()">保存修改</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="edit-video-modal">
+  <div class="modal-content">
+    <h3 id="edit-video-title">编辑视频</h3>
+    <div class="form-group"><label>视频标题</label><input id="edit-video-title-input"></div>
+    <div class="form-group"><label>描述</label><textarea id="edit-video-desc" rows="2"></textarea></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>分类</label>
+        <select id="edit-video-category">
+          <option value="machine-walkaround">Walkaround</option>
+          <option value="operation">In Operation</option>
+          <option value="inspection">Inspection & Loading</option>
+        </select>
+      </div>
+      <div class="form-group"><label>时长</label><input id="edit-video-duration" placeholder="如 3:15"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>类型</label>
+        <select id="edit-video-type">
+          <option value="youtube">YouTube</option>
+          <option value="mp4">本地 MP4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>视频地址 / YouTube ID</label>
+        <input id="edit-video-url" placeholder="YouTube ID 或 assets/videos/xxx.mp4">
+      </div>
+    </div>
+    <div class="form-group"><label>缩略图 URL</label><input id="edit-video-thumb"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeVideoEdit()">取消</button>
+      <button class="btn-save" onclick="saveVideoEdit()">保存修改</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const REPO = 'kaige899-rgb/baraka-machinery';
-const BRANCH = 'main';
-const JSON_PATH = 'data/machines.json';
+const REPO = "kaige899-rgb/baraka-machinery";
+const BRANCH = "main";
+const MACHINES_PATH = "data/machines.json";
+const VIDEOS_PATH = "data/videos.json";
+
 let machines = [];
+let videos = [];
 let editingId = null;
+let editingVideoId = null;
+let editingMachines = [];
+let editingVideos = [];
+
+function showToast(msg, type) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast " + type;
+  t.style.display = "block";
+  setTimeout(function() { t.style.display = "none"; }, 4000);
+}
 
 function login() {
-  const pw = document.getElementById('admin-password').value;
-  if (pw === 'baraka2024') {
-    document.getElementById('login-box').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    document.getElementById('login-status').innerHTML = '<span style="font-size:13px;color:#C9A94E;">已登录</span>';
+  var pw = document.getElementById("admin-password").value;
+  if (pw === "baraka2024") {
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("login-status").innerHTML = "<span style=\"font-size:13px;color:#C9A94E;\">已登录</span>";
     loadMachines();
   } else {
-    alert('密码错误！');
+    alert("密码错误！");
   }
 }
 
 function loadMachines() {
-  fetch('data/machines.json')
-    .then(r => r.json())
-    .then(data => {
+  fetch("data/machines.json")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
       machines = data;
       renderTable();
     })
-    .catch(() => {
-      document.getElementById('machine-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">加载失败</td></tr>';
+    .catch(function() {
+      document.getElementById("machine-table-body").innerHTML = "<tr><td colspan=\"8\" class=\"empty-state\">加载失败</td></tr>";
     });
 }
 
 function renderTable() {
-  const tbody = document.getElementById('machine-table-body');
-  document.getElementById('machine-count').textContent = `共 ${machines.length} 台机器`;
-
-  tbody.innerHTML = machines.map(m => {
-    const imgSrc = m.images ? m.images[0] : m.image;
-    return `<tr>
-      <td><img class="machine-img" src="${imgSrc}" alt="${m.model}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2245%22><rect fill=%22%23f0ede6%22 width=%2260%22 height=%2245%22/><text x=%2230%22 y=%2225%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22>无图</text></svg>'"></td>
-      <td><strong>${m.brand}</strong></td>
-      <td>${m.model}</td>
-      <td>${m.year}</td>
-      <td>${m.hours.toLocaleString()}</td>
-      <td>$${(m.price || 0).toLocaleString()}</td>
-      <td>${m.featured ? '<span class="featured-badge">精品</span>' : ''}</td>
-      <td><button onclick="openEdit(${m.id})">编辑</button></td>
-    </tr>`;
-  }).join('');
+  var tbody = document.getElementById("machine-table-body");
+  var html = "";
+  for (var i = 0; i < machines.length; i++) {
+    var m = machines[i];
+    var imgSrc = m.images ? m.images[0] : (m.image || "");
+    html += "<tr>" +
+      "<td><img class=\"machine-img\" src=\"" + imgSrc + "\" onerror=\"this.src='data:image/svg+xml,...'\"></td>" +
+      "<td><strong>" + m.brand + "</strong></td>" +
+      "<td>" + m.model + "</td>" +
+      "<td>" + m.year + "</td>" +
+      "<td>" + (m.hours || 0).toLocaleString() + "</td>" +
+      "<td>$" + (m.price || 0).toLocaleString() + "</td>" +
+      "<td>" + (m.featured ? "<span class=\"featured-badge\">精品</span>" : "") + "</td>" +
+      "<td class=\"actions\"><button onclick=\"openEdit(" + m.id + ")\">编辑</button></td>" +
+      "</tr>";
+  }
+  tbody.innerHTML = html;
 }
 
-let editingMachines = [];
-
 function openEdit(id) {
-  const m = machines.find(x => x.id === id);
+  var m = machines.find(function(x) { return x.id === id; });
   if (!m) return;
   editingId = id;
   editingMachines = JSON.parse(JSON.stringify(machines));
-  const edit = editingMachines.find(x => x.id === id);
+  var edit = editingMachines.find(function(x) { return x.id === id; });
 
-  document.getElementById('edit-title').textContent = `编辑 ${m.brand} ${m.model}`;
-  document.getElementById('edit-brand').value = edit.brand;
-  document.getElementById('edit-model').value = edit.model;
-  document.getElementById('edit-year').value = edit.year;
-  document.getElementById('edit-hours').value = edit.hours;
-  document.getElementById('edit-price').value = edit.price;
-  document.getElementById('edit-location').value = edit.location;
-  document.getElementById('edit-desc').value = edit.description;
-  const imgs = edit.images || (edit.image ? [edit.image] : []);
-  document.getElementById('edit-images').value = imgs.join('\n');
-  document.getElementById('edit-modal').classList.add('active');
+  document.getElementById("edit-title").textContent = "编辑 " + m.brand + " " + m.model;
+  document.getElementById("edit-brand").value = edit.brand;
+  document.getElementById("edit-model").value = edit.model;
+  document.getElementById("edit-year").value = edit.year;
+  document.getElementById("edit-hours").value = edit.hours;
+  document.getElementById("edit-price").value = edit.price;
+  document.getElementById("edit-location").value = edit.location;
+  document.getElementById("edit-desc").value = edit.description;
+  var imgs = edit.images || (edit.image ? [edit.image] : []);
+  document.getElementById("edit-images").value = imgs.join("\n");
+  document.getElementById("edit-modal").classList.add("active");
 }
 
 function saveEdit() {
-  const edit = editingMachines.find(x => x.id === editingId);
-  edit.brand = document.getElementById('edit-brand').value;
-  edit.model = document.getElementById('edit-model').value;
-  edit.year = parseInt(document.getElementById('edit-year').value);
-  edit.hours = parseInt(document.getElementById('edit-hours').value);
-  edit.price = parseInt(document.getElementById('edit-price').value);
-  edit.location = document.getElementById('edit-location').value;
-  edit.description = document.getElementById('edit-desc').value;
-
-  const imgLines = document.getElementById('edit-images').value.split('\n').filter(x => x.trim());
+  var edit = editingMachines.find(function(x) { return x.id === editingId; });
+  edit.brand = document.getElementById("edit-brand").value;
+  edit.model = document.getElementById("edit-model").value;
+  edit.year = parseInt(document.getElementById("edit-year").value);
+  edit.hours = parseInt(document.getElementById("edit-hours").value);
+  edit.price = parseInt(document.getElementById("edit-price").value);
+  edit.location = document.getElementById("edit-location").value;
+  edit.description = document.getElementById("edit-desc").value;
+  var imgLines = document.getElementById("edit-images").value.split("\n").filter(function(x) { return x.trim(); });
   if (imgLines.length === 1) {
     edit.image = imgLines[0];
     delete edit.images;
@@ -301,207 +271,163 @@ function saveEdit() {
     edit.images = imgLines;
     delete edit.image;
   }
-
   machines = JSON.parse(JSON.stringify(editingMachines));
   renderTable();
   closeEditModal();
-  showToast('已保存到本地，点击底部"保存到 GitHub"发布上线', 'success');
-  document.getElementById('save-info').textContent = '有未发布的修改，请点击保存';
+  showToast("已保存到本地，点击底部保存到 GitHub 发布上线", "success");
 }
 
 function closeEditModal() {
-  document.getElementById('edit-modal').classList.remove('active');
+  document.getElementById("edit-modal").classList.remove("active");
 }
-
-async function saveToGithub() {
-  const token = document.getElementById('github-token').value;
-  if (!token) {
-    showToast('请先输入 GitHub Token', 'error');
-    return;
-  }
-
-  const btn = document.getElementById('save-btn');
-  btn.disabled = true;
-  btn.textContent = '保存中...';
-
-  try {
-    // Save machines.json
-    await saveFileToGitHub(JSON_PATH, JSON.stringify(machines, null, 2), '后台管理：更新产品数据', token);
-    // Save videos.json
-    await saveFileToGitHub('data/videos.json', JSON.stringify(videos, null, 2), '后台管理：更新视频数据', token);
-
-    showToast('✅ 保存成功！Vercel 正在自动部署', 'success');
-    document.getElementById('save-info').textContent = '上次保存：刚刚';
-  } catch (e) {
-    showToast('❌ 保存失败：' + e.message, 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = '保存到 GitHub';
-}
-
-async function saveFileToGitHub(filePath, content, commitMsg, token) {
-  // Get current file SHA from GitHub
-  const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}?ref=${BRANCH}`, {
-      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-
-    let sha = '';
-    if (getRes.ok) {
-      const data = await getRes.json();
-      sha = data.sha;
-    }
-
-    // Update file on GitHub
-    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify({
-        message: commitMsg,
-        content: btoa(unescape(encodeURIComponent(content))),
-        sha: sha,
-        branch: BRANCH
-      })
-    });
-
-    if (!updateRes.ok) {
-      const err = await updateRes.json();
-      throw new Error(err.message || '保存 ' + filePath + ' 失败');
-    }
-  }
-
-
-function saveToken() {
-  const token = document.getElementById('github-token').value;
-  sessionStorage.setItem('github_token', token);
-}
-
-// Restore token from session
-const savedToken = sessionStorage.getItem('github_token');
-if (savedToken) document.getElementById('github-token').value = savedToken;
-
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + type;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 4000);
-}
-
-// --- Videos Admin ---
-let videos = [];
-let editingVideoId = null;
-let editingVideos = [];
 
 function switchTab(tab) {
-  document.getElementById('section-products').style.display = tab === 'products' ? 'block' : 'none';
-  document.getElementById('section-videos').style.display = tab === 'videos' ? 'block' : 'none';
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.style.background = b.id === 'tab-' + tab ? '#C9A94E' : '#e8e3da';
-    b.style.color = b.id === 'tab-' + tab ? '#fff' : '#666';
-  });
-  if (tab === 'videos') loadVideos();
+  document.getElementById("section-products").style.display = tab === "products" ? "block" : "none";
+  document.getElementById("section-videos").style.display = tab === "videos" ? "block" : "none";
+  document.getElementById("tab-products").className = "tab-btn" + (tab === "products" ? " active" : "");
+  document.getElementById("tab-videos").className = "tab-btn" + (tab === "videos" ? " active" : "");
+  if (tab === "videos") loadVideos();
 }
 
 function loadVideos() {
-  fetch('data/videos.json')
-    .then(r => r.json())
-    .then(data => {
+  fetch("data/videos.json")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
       videos = data;
       renderVideoTable();
     })
-    .catch(() => {
-      document.getElementById('video-table-body').innerHTML = '<tr><td colspan="6" class="empty-state">加载失败</td></tr>';
+    .catch(function() {
+      document.getElementById("video-table-body").innerHTML = "<tr><td colspan=\"6\" class=\"empty-state\">加载失败</td></tr>";
     });
 }
 
 function renderVideoTable() {
-  const tbody = document.getElementById('video-table-body');
-  document.getElementById('video-count').textContent = '共 ' + videos.length + ' 个视频';
-
-  const catLabels = { 'machine-walkaround': 'Walkaround', 'operation': 'In Operation', 'inspection': 'Inspection' };
-
-  tbody.innerHTML = videos.map(v => {
-    const thumb = v.thumbnail || '';
-    const vidType = v.type === 'mp4' ? '本地' : 'YouTube';
-    return '<tr>' +
-      '<td><img src="' + thumb + '" style="width:80px;height:45px;object-fit:cover;border-radius:4px;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2245%22><rect fill=%22%23f0ede6%22 width=%2280%22 height=%2245%22/><text x=%2240%22 y=%2225%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22>无图</text></svg>'"></td>' +
-      '<td><strong>' + v.title + '</strong></td>' +
-      '<td>' + (catLabels[v.category] || v.category) + '</td>' +
-      '<td>' + v.duration + '</td>' +
-      '<td>' + vidType + '</td>' +
-      '<td><button onclick="openVideoEdit(' + v.id + ')">编辑</button></td>' +
-      '</tr>';
-  }).join('');
+  var tbody = document.getElementById("video-table-body");
+  var catLabels = { "machine-walkaround": "Walkaround", "operation": "In Operation", "inspection": "Inspection" };
+  var html = "";
+  for (var i = 0; i < videos.length; i++) {
+    var v = videos[i];
+    var thumb = v.thumbnail || "";
+    var vidType = v.type === "mp4" ? "本地" : "YouTube";
+    var catName = catLabels[v.category] || v.category;
+    html += "<tr>" +
+      "<td><img src=\"" + thumb + "\" style=\"width:80px;height:45px;object-fit:cover;border-radius:4px;\" onerror=\"this.src='data:image/svg+xml,...'\"></td>" +
+      "<td><strong>" + v.title + "</strong></td>" +
+      "<td>" + catName + "</td>" +
+      "<td>" + (v.duration || "") + "</td>" +
+      "<td>" + vidType + "</td>" +
+      "<td class=\"actions\"><button onclick=\"openVideoEdit(" + v.id + ")\">编辑</button></td>" +
+      "</tr>";
+  }
+  tbody.innerHTML = html;
 }
 
 function openVideoEdit(id) {
-  const v = videos.find(x => x.id === id);
+  var v = videos.find(function(x) { return x.id === id; });
   if (!v) return;
   editingVideoId = id;
   editingVideos = JSON.parse(JSON.stringify(videos));
-  const edit = editingVideos.find(x => x.id === id);
+  var edit = editingVideos.find(function(x) { return x.id === id; });
 
-  document.getElementById('edit-video-title').textContent = '编辑视频';
-  document.getElementById('edit-video-title-input').value = edit.title;
-  document.getElementById('edit-video-desc').value = edit.description || '';
-  document.getElementById('edit-video-category').value = edit.category;
-  document.getElementById('edit-video-duration').value = edit.duration || '';
-  document.getElementById('edit-video-type').value = edit.type;
-  if (edit.type === 'youtube') {
-    document.getElementById('edit-video-url').value = edit.videoId || '';
-  } else {
-    document.getElementById('edit-video-url').value = edit.videoUrl || '';
-  }
-  document.getElementById('edit-video-thumb').value = edit.thumbnail || '';
-  toggleVideoType();
-  document.getElementById('edit-video-modal').classList.add('active');
-}
-
-function toggleVideoType() {
-  const type = document.getElementById('edit-video-type').value;
-  document.getElementById('edit-video-url').placeholder = type === 'youtube' ? 'YouTube 视频 ID' : 'assets/videos/文件名.MP4';
-}
-
-function closeVideoEdit() {
-  document.getElementById('edit-video-modal').classList.remove('active');
+  document.getElementById("edit-video-title").textContent = "编辑视频";
+  document.getElementById("edit-video-title-input").value = edit.title;
+  document.getElementById("edit-video-desc").value = edit.description || "";
+  document.getElementById("edit-video-category").value = edit.category;
+  document.getElementById("edit-video-duration").value = edit.duration || "";
+  document.getElementById("edit-video-type").value = edit.type;
+  document.getElementById("edit-video-url").value = edit.type === "youtube" ? (edit.videoId || "") : (edit.videoUrl || "");
+  document.getElementById("edit-video-thumb").value = edit.thumbnail || "";
+  document.getElementById("edit-video-modal").classList.add("active");
 }
 
 function saveVideoEdit() {
-  const edit = editingVideos.find(x => x.id === editingVideoId);
-  edit.title = document.getElementById('edit-video-title-input').value;
-  edit.description = document.getElementById('edit-video-desc').value;
-  edit.category = document.getElementById('edit-video-category').value;
-  edit.duration = document.getElementById('edit-video-duration').value;
-
-  const newType = document.getElementById('edit-video-type').value;
-  if (newType === 'youtube') {
-    edit.type = 'youtube';
-    edit.videoId = document.getElementById('edit-video-url').value;
+  var edit = editingVideos.find(function(x) { return x.id === editingVideoId; });
+  edit.title = document.getElementById("edit-video-title-input").value;
+  edit.description = document.getElementById("edit-video-desc").value;
+  edit.category = document.getElementById("edit-video-category").value;
+  edit.duration = document.getElementById("edit-video-duration").value;
+  var newType = document.getElementById("edit-video-type").value;
+  var url = document.getElementById("edit-video-url").value;
+  if (newType === "youtube") {
+    edit.type = "youtube";
+    edit.videoId = url;
     delete edit.videoUrl;
   } else {
-    edit.type = 'mp4';
-    edit.videoUrl = document.getElementById('edit-video-url').value;
+    edit.type = "mp4";
+    edit.videoUrl = url;
     delete edit.videoId;
   }
-  edit.thumbnail = document.getElementById('edit-video-thumb').value;
-
+  edit.thumbnail = document.getElementById("edit-video-thumb").value;
   videos = JSON.parse(JSON.stringify(editingVideos));
   renderVideoTable();
   closeVideoEdit();
-  showToast('视频已保存到本地，点击底部"保存到 GitHub"发布上线', 'success');
-  document.getElementById('save-info').textContent = '有未发布的修改（含视频）';
-  document.getElementById('save-btn').dataset.hasVideoChanges = 'true';
+  showToast("视频已保存到本地", "success");
 }
 
-// Add event listeners
-const loginBtn = document.getElementById("login-btn");
-if (loginBtn) loginBtn.addEventListener("click", login);
+function closeVideoEdit() {
+  document.getElementById("edit-video-modal").classList.remove("active");
+}
 
+function saveToGithub() {
+  var token = document.getElementById("github-token").value;
+  if (!token) {
+    showToast("请先输入 GitHub Token", "error");
+    return;
+  }
+  var btn = document.getElementById("save-btn");
+  btn.disabled = true;
+  btn.textContent = "保存中...";
+  saveFile(token, MACHINES_PATH, JSON.stringify(machines, null, 2), "后台管理：更新产品数据")
+    .then(function() {
+      return saveFile(token, VIDEOS_PATH, JSON.stringify(videos, null, 2), "后台管理：更新视频数据");
+    })
+    .then(function() {
+      showToast("保存成功！Vercel 正在自动部署", "success");
+    })
+    .catch(function(e) {
+      showToast("保存失败：" + e.message, "error");
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = "保存到 GitHub";
+    });
+}
+
+function saveFile(token, path, content, msg) {
+  var url = "https://api.github.com/repos/" + REPO + "/contents/" + path + "?ref=" + BRANCH;
+  return fetch(url, { headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github.v3+json" } })
+    .then(function(r) {
+      if (r.ok) return r.json();
+      return null;
+    })
+    .then(function(data) {
+      var sha = data ? data.sha : "";
+      var body = {
+        message: msg,
+        content: btoa(unescape(encodeURIComponent(content))),
+        sha: sha,
+        branch: BRANCH
+      };
+      return fetch("https://api.github.com/repos/" + REPO + "/contents/" + path, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    })
+    .then(function(r) {
+      if (!r.ok) { return r.json().then(function(e) { throw new Error(e.message); }); }
+    });
+}
+
+document.getElementById("login-btn").addEventListener("click", login);
+document.getElementById("admin-password").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") login();
+});
+var savedToken = sessionStorage.getItem("github_token");
+if (savedToken) document.getElementById("github-token").value = savedToken;
+document.getElementById("github-token").addEventListener("change", function() {
+  sessionStorage.setItem("github_token", this.value);
+});
 </script>
 </body>
 </html>
