@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60">
+  <defs>
+    <linearGradient id="gold-grad-w" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C9A94E"/>
+      <stop offset="100%" stop-color="#D4B96A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Excavator Icon -->
+  <g transform="translate(2, 5)">
+    <rect x="6" y="38" width="42" height="10" rx="5" fill="url(#gold-grad-w)"/>
+    <circle cx="12" cy="43" r="3.5" fill="#1A1A1A"/>
+    <circle cx="21" cy="43" r="3.5" fill="#1A1A1A"/>
+    <circle cx="30" cy="43" r="3.5" fill="#1A1A1A"/>
+    <circle cx="39" cy="43" r="3.5" fill="#1A1A1A"/>
+    <rect x="10" y="20" width="20" height="20" rx="3" fill="#FFFFFF"/>
+    <rect x="12" y="23" width="10" height="8" rx="2" fill="url(#gold-grad-w)" opacity="0.8"/>
+    <rect x="28" y="22" width="20" height="5" rx="2.5" fill="url(#gold-grad-w)" transform="rotate(-35, 28, 27)"/>
+    <rect x="40" y="8" width="5" height="20" rx="2.5" fill="url(#gold-grad-w)" transform="rotate(-50, 42, 28)"/>
+    <path d="M42 4 L48 12 L38 12 Z" fill="url(#gold-grad-w)"/>
+    <path d="M38 12 L48 12 L45 16 L41 16 Z" fill="#FFFFFF"/>
+    <line x1="30" y1="24" x2="40" y2="12" stroke="#D4B96A" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Baraka Text (White) -->
+  <text x="58" y="28" font-family="'Playfair Display', Georgia, serif" font-size="26" font-weight="700" fill="#FFFFFF">Baraka</text>
+
+  <!-- Machinery Text (Gold) -->
+  <text x="58" y="46" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#C9A94E" letter-spacing="4">MACHINERY</text>
+</svg>
