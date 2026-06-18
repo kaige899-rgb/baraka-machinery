@@ -1,0 +1,10 @@
+{
+  "name": "baraka-machinery",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Baraka Machinery - Premium Used Excavators",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
