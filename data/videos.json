@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "挖机视频 — 机器展示",
+    "description": "我们的挖机真实工作视频，展示机器的操作性能、液压系统和工况表现。欢迎联系了解更多详情。",
+    "category": "machine-walkaround",
+    "duration": "0:30",
+    "type": "mp4",
+    "videoUrl": "assets/videos/挖机视频.MP4",
+    "thumbnail": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=75"
+  },
+  {
+    "id": 2,
+    "title": "Komatsu PC200-8 in Operation",
+    "description": "A Komatsu PC200-8 working on a real construction site. See the machine's power, hydraulic performance, and smooth operation in real-world conditions.",
+    "category": "operation",
+    "duration": "3:15",
+    "type": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "thumbnail": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=640&q=75"
+  },
+  {
+    "id": 3,
+    "title": "Hitachi ZX200 Inspection Process",
+    "description": "Behind the scenes of our 72-point inspection. Watch our technicians check every critical system — engine, hydraulics, tracks, and structural integrity.",
+    "category": "inspection",
+    "duration": "5:48",
+    "type": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "thumbnail": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=75"
+  },
+  {
+    "id": 4,
+    "title": "Machine Loading — Guangzhou Port",
+    "description": "Watch how we prepare and load excavators for ocean freight at Guangzhou Port. Proper lashing, containerization, and documentation for smooth customs clearance.",
+    "category": "inspection",
+    "duration": "2:55",
+    "type": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "thumbnail": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=640&q=75"
+  },
+  {
+    "id": 5,
+    "title": "Kobelco SK200 — Customer Demo",
+    "description": "A Kobelco SK200-8 demonstrated for a visiting customer from Africa. Full operational demo including trenching, grading, and load testing.",
+    "category": "operation",
+    "duration": "6:10",
+    "type": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "thumbnail": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=75"
+  },
+  {
+    "id": 6,
+    "title": "Hyundai R210 — Walkaround & Specs",
+    "description": "Complete walkaround of a Hyundai R210VS. Detailed look at the engine bay, hydraulic pump, track tension, and bucket, plus full spec breakdown.",
+    "category": "machine-walkaround",
+    "duration": "4:05",
+    "type": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "thumbnail": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=640&q=75"
+  }
+]

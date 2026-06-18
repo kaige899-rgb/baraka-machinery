@@ -619,7 +619,23 @@ document.querySelectorAll('.video-tab').forEach(tab => {
 // --- Initial Render ---
 document.addEventListener('DOMContentLoaded', function() {
   renderVideos('all');
+  // Try to load updated data from admin (data/videos.json)
+  fetch('data/videos.json')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        videos.length = 0;
+        data.forEach(v => videos.push(v));
+        renderVideos(getActiveFilter());
+      }
+    })
+    .catch(() => {});
 });
+
+function getActiveFilter() {
+  const active = document.querySelector('.video-tab.active');
+  return active ? active.dataset.filter : 'all';
+}
 </script>
 </body>
 </html>

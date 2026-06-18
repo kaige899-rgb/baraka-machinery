@@ -89,7 +89,14 @@ tr:hover td { background: #faf8f5; }
       <div class="hint">需要创建 GitHub Token：右上角头像 → Settings → Developer settings → Personal access tokens → Fine-grained tokens → 选择仓库权限为 Contents（读写）</div>
     </div>
 
-    <!-- Machines Table -->
+    <!-- Tab Buttons -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button id="tab-products" class="tab-btn active" onclick="switchTab('products')" style="padding:10px 24px;background:#C9A94E;color:#fff;border:none;border-radius:4px;font-weight:600;cursor:pointer;">📦 产品管理</button>
+      <button id="tab-videos" class="tab-btn" onclick="switchTab('videos')" style="padding:10px 24px;background:#e8e3da;color:#666;border:none;border-radius:4px;font-weight:600;cursor:pointer;">🎬 视频管理</button>
+    </div>
+
+    <!-- Products Section -->
+    <div id="section-products">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <h3 style="font-family:'Playfair Display',serif;">产品列表</h3>
       <span style="font-size:13px;color:#999;" id="machine-count">加载中...</span>
@@ -101,6 +108,22 @@ tr:hover td { background: #faf8f5; }
       </thead>
       <tbody id="machine-table-body"></tbody>
     </table>
+
+    </div><!-- end section-products -->
+
+    <!-- Videos Section (hidden by default) -->
+    <div id="section-videos" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="font-family:'Playfair Display',serif;">视频列表</h3>
+        <span style="font-size:13px;color:#999;" id="video-count">加载中...</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>封面</th><th>标题</th><th>分类</th><th>时长</th><th>类型</th><th>操作</th></tr>
+        </thead>
+        <tbody id="video-table-body"></tbody>
+      </table>
+    </div>
 
     <!-- Edit Modal -->
     <div class="modal-edit" id="edit-modal">
@@ -128,6 +151,52 @@ tr:hover td { background: #faf8f5; }
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeEditModal()">取消</button>
           <button class="btn-save" onclick="saveEdit()">保存修改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Edit Modal -->
+    <div class="modal-edit" id="edit-video-modal">
+      <div class="modal-edit-content">
+        <h3 id="edit-video-title">编辑视频</h3>
+        <div class="form-group">
+          <label>视频标题</label><input id="edit-video-title-input">
+        </div>
+        <div class="form-group">
+          <label>描述</label><textarea id="edit-video-desc" rows="2"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>分类</label>
+            <select id="edit-video-category">
+              <option value="machine-walkaround">Walkaround</option>
+              <option value="operation">In Operation</option>
+              <option value="inspection">Inspection & Loading</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>时长 (如 3:15)</label><input id="edit-video-duration">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>类型</label>
+            <select id="edit-video-type" onchange="toggleVideoType()">
+              <option value="youtube">YouTube</option>
+              <option value="mp4">本地 MP4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>视频地址</label>
+            <input id="edit-video-url" placeholder="YouTube ID 或 MP4 路径">
+          </div>
+        </div>
+        <div class="form-group" id="video-thumb-group">
+          <label>缩略图 URL</label><input id="edit-video-thumb">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeVideoEdit()">取消</button>
+          <button class="btn-save" onclick="saveVideoEdit()">保存修改</button>
         </div>
       </div>
     </div>
@@ -256,10 +325,24 @@ async function saveToGithub() {
   btn.textContent = '保存中...';
 
   try {
-    const jsonContent = JSON.stringify(machines, null, 2);
+    // Save machines.json
+    await saveFileToGitHub(JSON_PATH, JSON.stringify(machines, null, 2), '后台管理：更新产品数据', token);
+    // Save videos.json
+    await saveFileToGitHub('data/videos.json', JSON.stringify(videos, null, 2), '后台管理：更新视频数据', token);
 
-    // Get current file SHA from GitHub
-    const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${JSON_PATH}?ref=${BRANCH}`, {
+    showToast('✅ 保存成功！Vercel 正在自动部署', 'success');
+    document.getElementById('save-info').textContent = '上次保存：刚刚';
+  } catch (e) {
+    showToast('❌ 保存失败：' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '保存到 GitHub';
+}
+
+async function saveFileToGitHub(filePath, content, commitMsg, token) {
+  // Get current file SHA from GitHub
+  const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}?ref=${BRANCH}`, {
       headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
 
@@ -278,27 +361,19 @@ async function saveToGithub() {
         'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
-        message: '后台管理：更新产品数据',
-        content: btoa(unescape(encodeURIComponent(jsonContent))),
+        message: commitMsg,
+        content: btoa(unescape(encodeURIComponent(content))),
         sha: sha,
         branch: BRANCH
       })
     });
 
-    if (updateRes.ok) {
-      showToast('✅ 保存成功！Vercel 正在自动部署，1-2 分钟上线', 'success');
-      document.getElementById('save-info').textContent = '上次保存：刚刚';
-    } else {
+    if (!updateRes.ok) {
       const err = await updateRes.json();
-      showToast('❌ 保存失败：' + (err.message || '未知错误'), 'error');
+      throw new Error(err.message || '保存 ' + filePath + ' 失败');
     }
-  } catch (e) {
-    showToast('❌ 网络错误：' + e.message, 'error');
   }
 
-  btn.disabled = false;
-  btn.textContent = '保存到 GitHub';
-}
 
 function saveToken() {
   const token = document.getElementById('github-token').value;
@@ -316,6 +391,113 @@ function showToast(msg, type) {
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 4000);
 }
+
+// --- Videos Admin ---
+let videos = [];
+let editingVideoId = null;
+let editingVideos = [];
+
+function switchTab(tab) {
+  document.getElementById('section-products').style.display = tab === 'products' ? 'block' : 'none';
+  document.getElementById('section-videos').style.display = tab === 'videos' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.style.background = b.id === 'tab-' + tab ? '#C9A94E' : '#e8e3da';
+    b.style.color = b.id === 'tab-' + tab ? '#fff' : '#666';
+  });
+  if (tab === 'videos') loadVideos();
+}
+
+function loadVideos() {
+  fetch('data/videos.json')
+    .then(r => r.json())
+    .then(data => {
+      videos = data;
+      renderVideoTable();
+    })
+    .catch(() => {
+      document.getElementById('video-table-body').innerHTML = '<tr><td colspan="6" class="empty-state">加载失败</td></tr>';
+    });
+}
+
+function renderVideoTable() {
+  const tbody = document.getElementById('video-table-body');
+  document.getElementById('video-count').textContent = '共 ' + videos.length + ' 个视频';
+
+  const catLabels = { 'machine-walkaround': 'Walkaround', 'operation': 'In Operation', 'inspection': 'Inspection' };
+
+  tbody.innerHTML = videos.map(v => {
+    const thumb = v.thumbnail || '';
+    const vidType = v.type === 'mp4' ? '本地' : 'YouTube';
+    return '<tr>' +
+      '<td><img src="' + thumb + '" style="width:80px;height:45px;object-fit:cover;border-radius:4px;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2245%22><rect fill=%22%23f0ede6%22 width=%2280%22 height=%2245%22/><text x=%2240%22 y=%2225%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22>无图</text></svg>'"></td>' +
+      '<td><strong>' + v.title + '</strong></td>' +
+      '<td>' + (catLabels[v.category] || v.category) + '</td>' +
+      '<td>' + v.duration + '</td>' +
+      '<td>' + vidType + '</td>' +
+      '<td><button onclick="openVideoEdit(' + v.id + ')">编辑</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function openVideoEdit(id) {
+  const v = videos.find(x => x.id === id);
+  if (!v) return;
+  editingVideoId = id;
+  editingVideos = JSON.parse(JSON.stringify(videos));
+  const edit = editingVideos.find(x => x.id === id);
+
+  document.getElementById('edit-video-title').textContent = '编辑视频';
+  document.getElementById('edit-video-title-input').value = edit.title;
+  document.getElementById('edit-video-desc').value = edit.description || '';
+  document.getElementById('edit-video-category').value = edit.category;
+  document.getElementById('edit-video-duration').value = edit.duration || '';
+  document.getElementById('edit-video-type').value = edit.type;
+  if (edit.type === 'youtube') {
+    document.getElementById('edit-video-url').value = edit.videoId || '';
+  } else {
+    document.getElementById('edit-video-url').value = edit.videoUrl || '';
+  }
+  document.getElementById('edit-video-thumb').value = edit.thumbnail || '';
+  toggleVideoType();
+  document.getElementById('edit-video-modal').classList.add('active');
+}
+
+function toggleVideoType() {
+  const type = document.getElementById('edit-video-type').value;
+  document.getElementById('edit-video-url').placeholder = type === 'youtube' ? 'YouTube 视频 ID' : 'assets/videos/文件名.MP4';
+}
+
+function closeVideoEdit() {
+  document.getElementById('edit-video-modal').classList.remove('active');
+}
+
+function saveVideoEdit() {
+  const edit = editingVideos.find(x => x.id === editingVideoId);
+  edit.title = document.getElementById('edit-video-title-input').value;
+  edit.description = document.getElementById('edit-video-desc').value;
+  edit.category = document.getElementById('edit-video-category').value;
+  edit.duration = document.getElementById('edit-video-duration').value;
+
+  const newType = document.getElementById('edit-video-type').value;
+  if (newType === 'youtube') {
+    edit.type = 'youtube';
+    edit.videoId = document.getElementById('edit-video-url').value;
+    delete edit.videoUrl;
+  } else {
+    edit.type = 'mp4';
+    edit.videoUrl = document.getElementById('edit-video-url').value;
+    delete edit.videoId;
+  }
+  edit.thumbnail = document.getElementById('edit-video-thumb').value;
+
+  videos = JSON.parse(JSON.stringify(editingVideos));
+  renderVideoTable();
+  closeVideoEdit();
+  showToast('视频已保存到本地，点击底部"保存到 GitHub"发布上线', 'success');
+  document.getElementById('save-info').textContent = '有未发布的修改（含视频）';
+  document.getElementById('save-btn').dataset.hasVideoChanges = 'true';
+}
+
 </script>
 </body>
 </html>
