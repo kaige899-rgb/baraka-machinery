@@ -3,11 +3,23 @@
    ============================================ */
 
 // --- Machine Data ---
-let machines = [];
+const machines = [
+  { id: 1, brand: 'Caterpillar', model: '320D', year: 2015, hours: 8500, price: 38000, location: 'Guangzhou', images: ['assets/images/3c2a8e1a4ee564625a4d106223ff0f.jpg','assets/images/4005e7d720a533f240d3a89ec8a834.jpg','assets/images/8b9a7f0f0161a5eaa21d685a47b2de.jpg','assets/images/93ef76658b90112339ba3a75a11e7d.jpg','assets/images/99a79760019f97b4d14f466752116f.jpg','assets/images/b09d403d4dae9c0f6687663c1a6e99.jpg','assets/images/cd19b524e0e827eee51b265587deed.jpg','assets/images/f4639510b106f9964dd597c0162fbf.jpg','assets/images/f98eed940297a964c8647557ee48ac.jpg'], featured: true, description: 'Well-maintained CAT 320D excavator with regular service history. Equipped with hydraulic quick coupler, auxiliary plumbing, and air conditioning. Machine is in good working condition and ready for international shipment.' },
+  { id: 2, brand: 'Komatsu', model: 'PC200-8', year: 2014, hours: 9200, price: 32500, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80', featured: true, description: 'Reliable Komatsu PC200-8 with low engine hours for its year. Fully serviced with new filters and oils. Comes with standard arm and bucket, A/C, and ROPS cab.' },
+  { id: 3, brand: 'Hitachi', model: 'ZX210LC-5G', year: 2016, hours: 7800, price: 42000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1598032892097-5e7b3af04ace?w=600&q=80', featured: true, description: 'Excellent condition Hitachi ZX210LC-5G. Long carriage model with great stability. Low hours, well-maintained by original owner. Includes quick coupler and spare bucket.' },
+  { id: 4, brand: 'Kobelco', model: 'SK200-8', year: 2015, hours: 8100, price: 35000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1578996952311-4b0a2486c9a6?w=600&q=80', featured: true, description: 'Well-maintained Kobelco SK200-8 with strong hydraulic performance. Comes with boom float, auxiliary lines, and air suspension seat. Ready for inspection.' },
+  { id: 5, brand: 'Doosan', model: 'DX225LCA', year: 2017, hours: 6500, price: 45000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1614314106912-5a7c7b1b5a2f?w=600&q=80', featured: true, description: 'Low-hour Doosan DX225LCA. Fuel-efficient with superior digging force. Features include rear camera, premium cab, and hydraulic quick coupler. Excellent investment.' },
+  { id: 6, brand: 'Volvo', model: 'EC210D', year: 2016, hours: 7200, price: 40000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1541888941-0a7b8bb78bb0?w=600&q=80', featured: false, description: 'Volvo EC210D with low hours. Known for fuel efficiency and operator comfort. Serviced regularly with genuine Volvo parts. Includes quick coupler and extra bucket.' },
+  { id: 7, brand: 'Hyundai', model: 'R220LC-9S', year: 2018, hours: 5800, price: 48000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80', featured: false, description: 'Late-model Hyundai R220LC-9S with very low hours. Excellent condition with full service records. Equipped with hydraulic coupler, A/C, and sound-reduced cab.' },
+  { id: 8, brand: 'Caterpillar', model: '330D', year: 2014, hours: 10200, price: 55000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80', featured: false, description: 'Large CAT 330D excavator ideal for heavy earthmoving. Strong undercarriage and engine. Well-maintained with documented service history. Available for worldwide delivery.' },
+  { id: 9, brand: 'Komatsu', model: 'PC300-8', year: 2015, hours: 8900, price: 52000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1598032892097-5e7b3af04ace?w=600&q=80', featured: false, description: 'Komatsu PC300-8 in good working order. Powerful machine suitable for mining and large construction projects. Regularly serviced, ready to work.' },
+  { id: 10, brand: 'Hitachi', model: 'ZX350LC-5G', year: 2017, hours: 6100, price: 62000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1533055640607-b9e5e3b75f23?w=600&q=80', featured: false, description: 'Premium Hitachi ZX350LC-5G with remarkably low hours. Large excavator in near-new condition. Full options including GPS, rear camera, and hydraulic coupler.' },
+  { id: 11, brand: 'Kobelco', model: 'SK350LC-8', year: 2016, hours: 7500, price: 56000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1578996952311-4b0a2486c9a6?w=600&q=80', featured: false, description: 'Kobelco SK350LC-8 with low hours. Excellent power-to-weight ratio. Well-maintained with no major repairs. Includes spare bucket set.' },
+  { id: 12, brand: 'SANY', model: 'SY215C', year: 2019, hours: 4200, price: 36000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1614314106912-5a7c7b1b5a2f?w=600&q=80', featured: false, description: 'Near-new SANY SY215C with incredibly low hours. Modern machine with excellent fuel economy and strong resale value. Still under manufacturer warranty.' },
+];
 
-
-let brands = [];
-let yearRange = { min: 2000, max: 2025 };
+const brands = [...new Set(machines.map(m => m.brand))].sort();
+const yearRange = { min: Math.min(...machines.map(m => m.year)), max: Math.max(...machines.map(m => m.year)) };
 
 function formatPrice(price) {
   return '$' + price.toLocaleString('en-US');
@@ -474,23 +486,8 @@ function initCounters() {
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initAnimations();
-  // Load data from JSON, then render
-fetch('data/machines.json')
-  .then(r => r.json())
-  .then(data => {
-    machines = data;
-    brands = [...new Set(data.map(m => m.brand))].sort();
-    yearRange = { min: Math.min(...data.map(m => m.year)), max: Math.max(...data.map(m => m.year)) };
-    renderFeatured();
-    initInventory();
-    initForm();
-  })
-  .catch(err => {
-    console.error('Failed to load machines data:', err);
-    // Fallback: render with empty data if JSON fails
-    renderFeatured();
-    initInventory();
-    initForm();
-  });
+  renderFeatured();
+  initInventory();
+  initForm();
   initCounters();
 });
