@@ -225,8 +225,8 @@ function renderTable() {
       "<td><strong>" + m.brand + "</strong></td>" +
       "<td>" + m.model + "</td>" +
       "<td>" + m.year + "</td>" +
-      "<td>" + (m.hours || 0).toLocaleString() + "</td>" +
-      "<td>$" + (m.price || 0).toLocaleString() + "</td>" +
+      "<td>" + (parseInt(m.hours) || 0).toLocaleString() + "</td>" +
+      "<td>$" + (parseInt(m.price) || 0).toLocaleString() + "</td>" +
       "<td>" + (m.featured ? "<span class=\"featured-badge\">精品</span>" : "") + "</td>" +
       "<td class=\"actions\"><button onclick=\"openEdit(" + m.id + ")\">编辑</button></td>" +
       "</tr>";
@@ -404,7 +404,7 @@ function saveFile(token, path, content, msg) {
       var sha = data ? data.sha : "";
       var body = {
         message: msg,
-        content: btoa(unescape(encodeURIComponent(content))),
+        content: btoa(unescape(encodeURIComponent(content) + "")),
         sha: sha,
         branch: BRANCH
       };
@@ -415,7 +415,13 @@ function saveFile(token, path, content, msg) {
       });
     })
     .then(function(r) {
-      if (!r.ok) { return r.json().then(function(e) { throw new Error(e.message); }); }
+      if (!r.ok) {
+        return r.text().then(function(text) {
+          var errMsg = "HTTP " + r.status;
+          try { var j = JSON.parse(text); errMsg = j.message || errMsg; } catch(e) {}
+          throw new Error("GitHub " + errMsg + " (代码 " + r.status + ")");
+        });
+      }
     });
 }
 
