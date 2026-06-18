@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baraka Machinery - 后台管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f5f3ef; color: #1a1a1a; }
+.admin-header { background: #1a1a1a; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+.admin-header h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+.admin-header h1 span { color: #C9A94E; }
+.admin-content { max-width: 1280px; margin: 0 auto; padding: 24px; }
+.login-box { max-width: 400px; margin: 100px auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+.login-box h2 { margin-bottom: 24px; }
+.login-box input { width: 100%; padding: 12px; border: 1px solid #e0ddd5; border-radius: 4px; margin-bottom: 16px; font-size: 14px; }
+.login-box button { width: 100%; padding: 12px; background: #C9A94E; color: #fff; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.token-box { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.token-box label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #6b6b6b; }
+.token-box input { width: 100%; padding: 10px; border: 1px solid #e0ddd5; border-radius: 4px; font-size: 13px; }
+.token-box .hint { font-size: 12px; color: #999; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+th { background: #1a1a1a; color: #C9A94E; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+td { padding: 12px 16px; border-bottom: 1px solid #f0ede6; font-size: 13px; vertical-align: middle; }
+tr:hover td { background: #faf8f5; }
+.machine-img { width: 60px; height: 45px; object-fit: cover; border-radius: 4px; }
+.featured-badge { background: #C9A94E; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.editable { cursor: pointer; color: #C9A94E; }
+.editable:hover { text-decoration: underline; }
+.actions { display: flex; gap: 6px; }
+.actions button { padding: 6px 12px; border: 1px solid #e0ddd5; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; }
+.actions button:hover { border-color: #C9A94E; color: #C9A94E; }
+.save-bar { position: sticky; bottom: 0; background: #1a1a1a; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; border-radius: 8px; }
+.save-bar .info { color: rgba(255,255,255,0.7); font-size: 13px; }
+.save-bar button { padding: 10px 32px; background: #C9A94E; color: #fff; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.save-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+.save-bar button:hover:not(:disabled) { background: #b89830; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; color: #fff; font-weight: 500; font-size: 14px; z-index: 9999; display: none; }
+.toast.success { background: #22c55e; }
+.toast.error { background: #ef4444; }
+.modal-edit { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal-edit.active { display: flex; }
+.modal-edit-content { background: #fff; border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px; }
+.modal-edit-content h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: #6b6b6b; margin-bottom: 4px; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #e0ddd5; border-radius: 4px; font-size: 13px; font-family: 'Inter', sans-serif; }
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+.modal-actions button { flex: 1; padding: 12px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-save { background: #C9A94E; color: #fff; border: none; }
+.btn-cancel { background: #fff; border: 1px solid #e0ddd5; }
+.btn-add { background: #1a1a1a; color: #fff; border: none; float: right; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.empty-state { text-align: center; padding: 80px 20px; color: #999; }
+@media (max-width: 768px) {
+  table { font-size: 12px; }
+  th, td { padding: 8px 10px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="admin-header">
+  <h1>Baraka <span>Machinery</span> 管理后台</h1>
+  <div id="login-status"></div>
+</div>
+
+<div class="admin-content" id="app">
+  <!-- Login -->
+  <div class="login-box" id="login-box">
+    <h2>管理员登录</h2>
+    <p style="font-size:13px;color:#999;margin-bottom:20px;">输入管理密码以进入后台</p>
+    <input type="password" id="admin-password" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter') login()">
+    <button onclick="login()">登录</button>
+  </div>
+
+  <!-- Main Admin -->
+  <div id="admin-panel" style="display:none;">
+    <!-- GitHub Token -->
+    <div class="token-box">
+      <label>GitHub Token（自动保存用）</label>
+      <input type="password" id="github-token" placeholder="输入 GitHub Personal Access Token" onchange="saveToken()">
+      <div class="hint">需要创建 GitHub Token：右上角头像 → Settings → Developer settings → Personal access tokens → Fine-grained tokens → 选择仓库权限为 Contents（读写）</div>
+    </div>
+
+    <!-- Machines Table -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-family:'Playfair Display',serif;">产品列表</h3>
+      <span style="font-size:13px;color:#999;" id="machine-count">加载中...</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>图片</th><th>品牌</th><th>型号</th><th>年份</th><th>小时</th><th>价格</th><th>精品</th><th>操作</th></tr>
+      </thead>
+      <tbody id="machine-table-body"></tbody>
+    </table>
+
+    <!-- Edit Modal -->
+    <div class="modal-edit" id="edit-modal">
+      <div class="modal-edit-content">
+        <h3 id="edit-title">编辑产品</h3>
+        <div class="form-row">
+          <div class="form-group"><label>品牌</label><input id="edit-brand"></div>
+          <div class="form-group"><label>型号</label><input id="edit-model"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>年份</label><input id="edit-year" type="number"></div>
+          <div class="form-group"><label>工作小时</label><input id="edit-hours" type="number"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>价格 ($)</label><input id="edit-price" type="number"></div>
+          <div class="form-group"><label>地点</label><input id="edit-location"></div>
+        </div>
+        <div class="form-group">
+          <label>产品描述</label><textarea id="edit-desc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>图片路径（每行一个）</label>
+          <textarea id="edit-images" rows="3" placeholder="assets/images/xxx.jpg"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeEditModal()">取消</button>
+          <button class="btn-save" onclick="saveEdit()">保存修改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Bar -->
+    <div class="save-bar">
+      <span class="info" id="save-info">修改后点击"保存到 GitHub"自动部署</span>
+      <button id="save-btn" onclick="saveToGithub()">保存到 GitHub</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const REPO = 'kaige899-rgb/baraka-machinery';
+const BRANCH = 'main';
+const JSON_PATH = 'data/machines.json';
+let machines = [];
+let editingId = null;
+
+function login() {
+  const pw = document.getElementById('admin-password').value;
+  if (pw === 'baraka2024') {
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('login-status').innerHTML = '<span style="font-size:13px;color:#C9A94E;">已登录</span>';
+    loadMachines();
+  } else {
+    alert('密码错误！');
+  }
+}
+
+function loadMachines() {
+  fetch('data/machines.json')
+    .then(r => r.json())
+    .then(data => {
+      machines = data;
+      renderTable();
+    })
+    .catch(() => {
+      document.getElementById('machine-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">加载失败</td></tr>';
+    });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('machine-table-body');
+  document.getElementById('machine-count').textContent = `共 ${machines.length} 台机器`;
+
+  tbody.innerHTML = machines.map(m => {
+    const imgSrc = m.images ? m.images[0] : m.image;
+    return `<tr>
+      <td><img class="machine-img" src="${imgSrc}" alt="${m.model}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2245%22><rect fill=%22%23f0ede6%22 width=%2260%22 height=%2245%22/><text x=%2230%22 y=%2225%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22>无图</text></svg>'"></td>
+      <td><strong>${m.brand}</strong></td>
+      <td>${m.model}</td>
+      <td>${m.year}</td>
+      <td>${m.hours.toLocaleString()}</td>
+      <td>$${(m.price || 0).toLocaleString()}</td>
+      <td>${m.featured ? '<span class="featured-badge">精品</span>' : ''}</td>
+      <td><button onclick="openEdit(${m.id})">编辑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+let editingMachines = [];
+
+function openEdit(id) {
+  const m = machines.find(x => x.id === id);
+  if (!m) return;
+  editingId = id;
+  editingMachines = JSON.parse(JSON.stringify(machines));
+  const edit = editingMachines.find(x => x.id === id);
+
+  document.getElementById('edit-title').textContent = `编辑 ${m.brand} ${m.model}`;
+  document.getElementById('edit-brand').value = edit.brand;
+  document.getElementById('edit-model').value = edit.model;
+  document.getElementById('edit-year').value = edit.year;
+  document.getElementById('edit-hours').value = edit.hours;
+  document.getElementById('edit-price').value = edit.price;
+  document.getElementById('edit-location').value = edit.location;
+  document.getElementById('edit-desc').value = edit.description;
+  const imgs = edit.images || (edit.image ? [edit.image] : []);
+  document.getElementById('edit-images').value = imgs.join('\n');
+  document.getElementById('edit-modal').classList.add('active');
+}
+
+function saveEdit() {
+  const edit = editingMachines.find(x => x.id === editingId);
+  edit.brand = document.getElementById('edit-brand').value;
+  edit.model = document.getElementById('edit-model').value;
+  edit.year = parseInt(document.getElementById('edit-year').value);
+  edit.hours = parseInt(document.getElementById('edit-hours').value);
+  edit.price = parseInt(document.getElementById('edit-price').value);
+  edit.location = document.getElementById('edit-location').value;
+  edit.description = document.getElementById('edit-desc').value;
+
+  const imgLines = document.getElementById('edit-images').value.split('\n').filter(x => x.trim());
+  if (imgLines.length === 1) {
+    edit.image = imgLines[0];
+    delete edit.images;
+  } else if (imgLines.length > 1) {
+    edit.images = imgLines;
+    delete edit.image;
+  }
+
+  machines = JSON.parse(JSON.stringify(editingMachines));
+  renderTable();
+  closeEditModal();
+  showToast('已保存到本地，点击底部"保存到 GitHub"发布上线', 'success');
+  document.getElementById('save-info').textContent = '有未发布的修改，请点击保存';
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+}
+
+async function saveToGithub() {
+  const token = document.getElementById('github-token').value;
+  if (!token) {
+    showToast('请先输入 GitHub Token', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+
+  try {
+    const jsonContent = JSON.stringify(machines, null, 2);
+
+    // Get current file SHA from GitHub
+    const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${JSON_PATH}?ref=${BRANCH}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+
+    let sha = '';
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
+    }
+
+    // Update file on GitHub
+    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${JSON_PATH}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify({
+        message: '后台管理：更新产品数据',
+        content: btoa(unescape(encodeURIComponent(jsonContent))),
+        sha: sha,
+        branch: BRANCH
+      })
+    });
+
+    if (updateRes.ok) {
+      showToast('✅ 保存成功！Vercel 正在自动部署，1-2 分钟上线', 'success');
+      document.getElementById('save-info').textContent = '上次保存：刚刚';
+    } else {
+      const err = await updateRes.json();
+      showToast('❌ 保存失败：' + (err.message || '未知错误'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ 网络错误：' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '保存到 GitHub';
+}
+
+function saveToken() {
+  const token = document.getElementById('github-token').value;
+  sessionStorage.setItem('github_token', token);
+}
+
+// Restore token from session
+const savedToken = sessionStorage.getItem('github_token');
+if (savedToken) document.getElementById('github-token').value = savedToken;
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 4000);
+}
+</script>
+</body>
+</html>
