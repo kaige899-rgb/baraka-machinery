@@ -4,7 +4,7 @@
 
 // --- Machine Data ---
 const machines = [
-  { id: 1, brand: 'Caterpillar', model: '320D', year: 2015, hours: 8500, price: 38000, location: 'Guangzhou', image: 'assets/images/3c2a8e1a4ee564625a4d106223ff0f.jpg', featured: true, description: 'Well-maintained CAT 320D excavator with regular service history. Equipped with hydraulic quick coupler, auxiliary plumbing, and air conditioning. Machine is in good working condition and ready for international shipment.' },
+  { id: 1, brand: 'Caterpillar', model: '320D', year: 2015, hours: 8500, price: 38000, location: 'Guangzhou', images: ['assets/images/3c2a8e1a4ee564625a4d106223ff0f.jpg','assets/images/4005e7d720a533f240d3a89ec8a834.jpg','assets/images/8b9a7f0f0161a5eaa21d685a47b2de.jpg','assets/images/93ef76658b90112339ba3a75a11e7d.jpg','assets/images/99a79760019f97b4d14f466752116f.jpg','assets/images/b09d403d4dae9c0f6687663c1a6e99.jpg','assets/images/cd19b524e0e827eee51b265587deed.jpg','assets/images/f4639510b106f9964dd597c0162fbf.jpg','assets/images/f98eed940297a964c8647557ee48ac.jpg'], featured: true, description: 'Well-maintained CAT 320D excavator with regular service history. Equipped with hydraulic quick coupler, auxiliary plumbing, and air conditioning. Machine is in good working condition and ready for international shipment.' },
   { id: 2, brand: 'Komatsu', model: 'PC200-8', year: 2014, hours: 9200, price: 32500, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80', featured: true, description: 'Reliable Komatsu PC200-8 with low engine hours for its year. Fully serviced with new filters and oils. Comes with standard arm and bucket, A/C, and ROPS cab.' },
   { id: 3, brand: 'Hitachi', model: 'ZX210LC-5G', year: 2016, hours: 7800, price: 42000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1598032892097-5e7b3af04ace?w=600&q=80', featured: true, description: 'Excellent condition Hitachi ZX210LC-5G. Long carriage model with great stability. Low hours, well-maintained by original owner. Includes quick coupler and spare bucket.' },
   { id: 4, brand: 'Kobelco', model: 'SK200-8', year: 2015, hours: 8100, price: 35000, location: 'Guangzhou', image: 'https://images.unsplash.com/photo-1578996952311-4b0a2486c9a6?w=600&q=80', featured: true, description: 'Well-maintained Kobelco SK200-8 with strong hydraulic performance. Comes with boom float, auxiliary lines, and air suspension seat. Ready for inspection.' },
@@ -75,6 +75,15 @@ function initAnimations() {
 }
 
 // --- Home: Render Featured Machines ---
+
+// Helper: get image(s) for a machine
+function getImages(machine) {
+  return machine.images || (machine.image ? [machine.image] : []);
+}
+function getImage(machine) {
+  return imgs.length > 0 ? imgs[0] : "";
+}
+
 function renderFeatured() {
   const grid = document.querySelector('.featured-machines .machines-grid');
   if (!grid) return;
@@ -82,7 +91,7 @@ function renderFeatured() {
   const featured = machines.filter(m => m.featured).slice(0, 6);
   grid.innerHTML = featured.map(m => `
     <div class="machine-card" data-id="${m.id}" onclick="openModal(${m.id})">
-      <img class="machine-card-image" src="${m.image}" alt="${m.brand} ${m.model}" loading="lazy">
+      <img class="machine-card-image" src="${getImage(m)}" alt="${m.brand} ${m.model}" loading="lazy">
       <div class="machine-card-body">
         <div class="machine-card-brand">${m.brand}</div>
         <div class="machine-card-title">${m.model}</div>
@@ -202,7 +211,7 @@ function initInventory() {
 
     grid.innerHTML = filtered.map(m => `
       <div class="machine-card" data-id="${m.id}" onclick="openModal(${m.id})">
-        <img class="machine-card-image" src="${m.image}" alt="${m.brand} ${m.model}" loading="lazy">
+        <img class="machine-card-image" src="${getImage(m)}" alt="${m.brand} ${m.model}" loading="lazy">
         <div class="machine-card-body">
           <div class="machine-card-brand">${m.brand}</div>
           <div class="machine-card-title">${m.model}</div>
@@ -265,10 +274,19 @@ function openModal(id) {
   const overlay = document.getElementById('modal-overlay');
   if (!overlay) return;
 
+  window._currentMachineId = id;
+  window._currentSlide = 0;
+
   overlay.innerHTML = `
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">&times;</button>
-      <img class="modal-image" src="${machine.image}" alt="${machine.brand} ${machine.model}">
+      <div class="modal-image-carousel">
+        <div class="carousel-container" id="carousel-container"></div>
+        <button class="carousel-btn carousel-prev" onclick="changeSlide(-1)">&lsaquo;</button>
+        <button class="carousel-btn carousel-next" onclick="changeSlide(1)">&rsaquo;</button>
+        <div class="carousel-dots" id="carousel-dots"></div>
+        <div class="carousel-counter" id="carousel-counter"></div>
+      </div>
       <div class="modal-body">
         <div class="modal-brand">${machine.brand}</div>
         <h2 class="modal-title">${machine.model}</h2>
@@ -311,6 +329,73 @@ function openModal(id) {
   });
 
   document.addEventListener('keydown', escHandler);
+}
+
+function initCarousel(id) {
+  const machine = machines.find(m => m.id === id);
+  if (!machine) return;
+  const images = getImages(machine);
+  if (images.length <= 1) {
+    document.querySelector('.carousel-prev').style.display = 'none';
+    document.querySelector('.carousel-next').style.display = 'none';
+    document.getElementById('carousel-dots').style.display = 'none';
+    document.getElementById('carousel-counter').style.display = 'none';
+  }
+  const container = document.getElementById('carousel-container');
+  const dots = document.getElementById('carousel-dots');
+  const counter = document.getElementById('carousel-counter');
+
+  container.innerHTML = images.map((img, i) =>
+    '<div class="carousel-slide" data-index="' + i + '" style="display:' + (i === 0 ? 'block' : 'none') + '">' +
+      '<img src="' + img + '" alt="' + machine.brand + ' ' + machine.model + '" class="carousel-image">' +
+    '</div>'
+  ).join('');
+
+  if (images.length > 1) {
+    dots.innerHTML = images.map((_, i) =>
+      '<span class="carousel-dot' + (i === 0 ? ' active' : '') + '" onclick="goToSlide(' + i + ')"></span>'
+    ).join('');
+    counter.textContent = '1 / ' + images.length;
+  } else {
+    dots.style.display = 'none';
+    counter.style.display = 'none';
+  }
+}
+
+function changeSlide(delta) {
+  const machine = machines.find(m => m.id === window._currentMachineId);
+  if (!machine) return;
+  const images = getImages(machine);
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.carousel-dot');
+  if (!slides.length) return;
+
+  slides[window._currentSlide].style.display = 'none';
+  if (dots.length) dots[window._currentSlide].classList.remove('active');
+
+  window._currentSlide = (window._currentSlide + delta + images.length) % images.length;
+
+  slides[window._currentSlide].style.display = 'block';
+  if (dots.length) dots[window._currentSlide].classList.add('active');
+  document.getElementById('carousel-counter').textContent = (window._currentSlide + 1) + ' / ' + images.length;
+}
+
+function goToSlide(index) {
+  const machine = machines.find(m => m.id === window._currentMachineId);
+  if (!machine) return;
+  const images = getImages(machine);
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.carousel-dot');
+  if (!slides.length) return;
+
+  slides[window._currentSlide].style.display = 'none';
+  if (dots.length) dots[window._currentSlide].classList.remove('active');
+
+  window._currentSlide = index;
+
+  slides[window._currentSlide].style.display = 'block';
+  if (dots.length) dots[window._currentSlide].classList.add('active');
+  document.getElementById('carousel-counter').textContent = (window._currentSlide + 1) + ' / ' + images.length;
 }
 
 function closeModal() {
